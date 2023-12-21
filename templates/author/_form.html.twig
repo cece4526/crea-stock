@@ -1,0 +1,25 @@
+{{ form_start(form) }}
+{{ form_errors(form) }}
+<div class="row">
+    <div class="col">
+        <div class="card">
+        {% block form_row %}
+            <div class="form-group">
+                {{ form_label(form.name) }}
+                {{ form_widget(form.name) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.firstName) }}
+                {{ form_widget(form.firstName) }}
+            </div>
+            <div class="form-group">
+                {{ form_row(form.editor) }}
+            </div>
+            <button class="btn btn-primary m-auto mb-3 px-3 py-2 hover:bg-cyan-300">
+                {{ button_label|default('Créer l\'auteur') }}
+            </button>
+        {% endblock %}
+        </div>
+    </div>
+</div>
+{{ form_end(form) }}
