@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\UX\Turbo\Attribute\Broadcast;
 
@@ -34,6 +36,17 @@ class Product
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
     private ?SubCategory $subCategory = null;
+
+    #[ORM\ManyToOne(inversedBy: 'products')]
+    private ?Author $author = null;
+
+    #[ORM\OneToMany(mappedBy: 'products', targetEntity: Editor::class)]
+    private Collection $editors;
+
+    public function __construct()
+    {
+        $this->editors = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -108,6 +121,48 @@ class Product
     public function setSubCategory(?SubCategory $subCategory): static
     {
         $this->subCategory = $subCategory;
+
+        return $this;
+    }
+
+    public function getAuthor(): ?Author
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?Author $author): static
+    {
+        $this->author = $author;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Editor>
+     */
+    public function getEditors(): Collection
+    {
+        return $this->editors;
+    }
+
+    public function addEditor(Editor $editor): static
+    {
+        if (!$this->editors->contains($editor)) {
+            $this->editors->add($editor);
+            $editor->setProducts($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEditor(Editor $editor): static
+    {
+        if ($this->editors->removeElement($editor)) {
+            // set the owning side to null (unless already changed)
+            if ($editor->getProducts() === $this) {
+                $editor->setProducts(null);
+            }
+        }
 
         return $this;
     }
