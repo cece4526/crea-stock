@@ -24,10 +24,10 @@ class Product
     private ?int $number = null;
 
     #[ORM\Column]
-    private ?int $barcode = null;
+    private ?float $barcode = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    private ?string $condition = null;
+    private ?string $productCondition = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
@@ -40,13 +40,11 @@ class Product
     #[ORM\ManyToOne(inversedBy: 'products')]
     private ?Author $author = null;
 
-    #[ORM\OneToMany(mappedBy: 'products', targetEntity: Editor::class)]
-    private Collection $editors;
 
-    public function __construct()
-    {
-        $this->editors = new ArrayCollection();
-    }
+    #[ORM\ManyToOne(inversedBy: 'product')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Editor $editor = null;
+
 
     public function getId(): ?int
     {
@@ -89,14 +87,14 @@ class Product
         return $this;
     }
 
-    public function getCondition(): ?string
+    public function getProductCondition(): ?string
     {
-        return $this->condition;
+        return $this->productCondition;
     }
 
-    public function setCondition(?string $condition): static
+    public function setProductCondition(?string $productCondition): static
     {
-        $this->condition = $condition;
+        $this->productCondition = $productCondition;
 
         return $this;
     }
@@ -137,32 +135,14 @@ class Product
         return $this;
     }
 
-    /**
-     * @return Collection<int, Editor>
-     */
-    public function getEditors(): Collection
+    public function getEditor(): ?Editor
     {
-        return $this->editors;
+        return $this->editor;
     }
 
-    public function addEditor(Editor $editor): static
+    public function setEditor(?Editor $editor): static
     {
-        if (!$this->editors->contains($editor)) {
-            $this->editors->add($editor);
-            $editor->setProducts($this);
-        }
-
-        return $this;
-    }
-
-    public function removeEditor(Editor $editor): static
-    {
-        if ($this->editors->removeElement($editor)) {
-            // set the owning side to null (unless already changed)
-            if ($editor->getProducts() === $this) {
-                $editor->setProducts(null);
-            }
-        }
+        $this->editor = $editor;
 
         return $this;
     }

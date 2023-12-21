@@ -24,13 +24,12 @@ class Author
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Product::class)]
     private Collection $products;
 
-    #[ORM\ManyToMany(targetEntity: Editor::class, mappedBy: 'author')]
-    private Collection $editors;
+    #[ORM\ManyToOne(inversedBy: 'authors')]
+    private ?Editor $editor = null;
 
     public function __construct()
     {
         $this->products = new ArrayCollection();
-        $this->editors = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -92,30 +91,16 @@ class Author
         return $this;
     }
 
-    /**
-     * @return Collection<int, Editor>
-     */
-    public function getEditors(): Collection
+    public function getEditor(): ?Editor
     {
-        return $this->editors;
+        return $this->editor;
     }
 
-    public function addEditor(Editor $editor): static
+    public function setEditor(?Editor $editor): static
     {
-        if (!$this->editors->contains($editor)) {
-            $this->editors->add($editor);
-            $editor->addAuthor($this);
-        }
+        $this->editor = $editor;
 
         return $this;
     }
 
-    public function removeEditor(Editor $editor): static
-    {
-        if ($this->editors->removeElement($editor)) {
-            $editor->removeAuthor($this);
-        }
-
-        return $this;
-    }
 }

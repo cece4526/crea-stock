@@ -18,15 +18,19 @@ class Editor
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\ManyToMany(targetEntity: Author::class, inversedBy: 'editors')]
-    private Collection $author;
 
-    #[ORM\ManyToOne(inversedBy: 'editors')]
-    private ?Product $products = null;
+    #[ORM\OneToMany(mappedBy: 'editor', targetEntity: product::class, orphanRemoval: true)]
+    private Collection $product;
+
+    #[ORM\OneToMany(mappedBy: 'editor', targetEntity: Author::class)]
+    private Collection $authors;
+
 
     public function __construct()
     {
-        $this->author = new ArrayCollection();
+        $this->product = new ArrayCollection();
+        $this->authors = new ArrayCollection();
+
     }
 
     public function getId(): ?int
@@ -46,18 +50,50 @@ class Editor
         return $this;
     }
 
+
+    /**
+     * @return Collection<int, product>
+     */
+    public function getProduct(): Collection
+    {
+        return $this->product;
+    }
+
+    public function addProduct(product $product): static
+    {
+        if (!$this->product->contains($product)) {
+            $this->product->add($product);
+            $product->setEditor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(product $product): static
+    {
+        if ($this->product->removeElement($product)) {
+            // set the owning side to null (unless already changed)
+            if ($product->getEditor() === $this) {
+                $product->setEditor(null);
+            }
+        }
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Author>
      */
-    public function getAuthor(): Collection
+    public function getAuthors(): Collection
     {
-        return $this->author;
+        return $this->authors;
     }
 
     public function addAuthor(Author $author): static
     {
-        if (!$this->author->contains($author)) {
-            $this->author->add($author);
+        if (!$this->authors->contains($author)) {
+            $this->authors->add($author);
+            $author->setEditor($this);
         }
 
         return $this;
@@ -65,20 +101,14 @@ class Editor
 
     public function removeAuthor(Author $author): static
     {
-        $this->author->removeElement($author);
+        if ($this->authors->removeElement($author)) {
+            // set the owning side to null (unless already changed)
+            if ($author->getEditor() === $this) {
+                $author->setEditor(null);
+            }
+        }
 
         return $this;
     }
 
-    public function getProducts(): ?Product
-    {
-        return $this->products;
-    }
-
-    public function setProducts(?Product $products): static
-    {
-        $this->products = $products;
-
-        return $this;
-    }
 }

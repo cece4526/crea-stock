@@ -16,10 +16,9 @@ class AuthorType extends AbstractType
         $builder
             ->add('name')
             ->add('firstName')
-            ->add('editors', EntityType::class, [
+            ->add('editor', EntityType::class, [
                 'class' => Editor::class,
                 'choice_label' => 'name',
-                'multiple' => true,
             ])
         ;
     }

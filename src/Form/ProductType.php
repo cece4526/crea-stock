@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Author;
 use App\Entity\Category;
+use App\Entity\Editor;
 use App\Entity\Product;
 use App\Entity\SubCategory;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -19,18 +20,22 @@ class ProductType extends AbstractType
             ->add('title')
             ->add('number')
             ->add('barcode')
-            ->add('condition')
+            ->add('productCondition')
             ->add('category', EntityType::class, [
                 'class' => Category::class,
-                'choice_label' => 'id',
+                'choice_label' => 'name',
             ])
             ->add('subCategory', EntityType::class, [
                 'class' => SubCategory::class,
-                'choice_label' => 'id',
+                'choice_label' => 'name',
             ])
             ->add('author', EntityType::class, [
                 'class' => Author::class,
-                'choice_label' => 'id',
+                'choice_label' => 'name',
+            ])
+            ->add('editor', EntityType::class, [
+                'class' => Editor::class,
+                'choice_label' => 'name',
             ])
         ;
     }

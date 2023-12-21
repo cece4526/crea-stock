@@ -16,15 +16,6 @@ class EditorType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('author', EntityType::class, [
-                'class' => Author::class,
-                'choice_label' => 'id',
-                'multiple' => true,
-            ])
-            ->add('products', EntityType::class, [
-                'class' => Product::class,
-                'choice_label' => 'id',
-            ])
         ;
     }
 
