@@ -60,4 +60,48 @@ class CategoryController extends AbstractController
             'form' => $form->createView()
         ]);
     }
+
+    #[Route('/edit/{name}', name: 'app_category_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, CategoryRepository $categoryRepository,EntityManagerInterface $em): Response
+    {
+        $category = new Category;
+        $categorySlug = $request->attributes->get('name');
+        $category = $categoryRepository->findOneBySomeField($categorySlug);
+
+        // $this->denyAccessUnlessGranted('TRICK_EDIT', $category);
+        //I create my form for edit trick
+        $form = $this->createForm(CategoryType::class, $category);
+        // $user = $this->getUser();
+        //the form request is processed
+        $form->handleRequest($request);
+
+        // if ($user === null) {
+            
+        //     $this->addFlash('danger', 'Veuillez vous connecter pour modifier un trick');
+        //     return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
+        // }
+        //I check if I have a form and that it is valid
+        if ($form->isSubmitted() && $form->isValid()) {
+
+
+            $category->setName(strtoupper($category->getName()));
+
+
+            $em->persist($category);
+            $em->flush();
+
+            $categoryRepository->save($category, true);
+            $this->addFlash(
+                'success',
+                'Le trick a bien été enregistré'
+            );
+
+            // return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('category/edit.html.twig', [
+            'category' => $category,
+            'form' => $form->createView()
+        ]);
+    }
 }

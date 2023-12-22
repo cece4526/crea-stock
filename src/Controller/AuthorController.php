@@ -26,12 +26,10 @@ class AuthorController extends AbstractController
     public function new(Request $request,AuthorRepository $authorRepository,EntityManagerInterface $em): Response
     {
 
-        //I create my form for new trick
         $author = new Author();
         // $this->denyAccessUnlessGranted('CATEGORY_CREATE', $author);
         $form = $this->createForm(AuthorType::class, $author);
         // $user = $this->getUser();
-        //the form request is processed
         $form->handleRequest($request);
 
         // if ($user === null) {
@@ -39,7 +37,6 @@ class AuthorController extends AbstractController
         //     $this->addFlash('danger', 'Veuillez vous connecter pour ajouter un trick');
         //     return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
         // }
-        //I check if I have a form and that it is valid
         if ($form->isSubmitted() && $form->isValid()) {
             $author->setName(strtoupper($author->getName()));
 
@@ -60,4 +57,49 @@ class AuthorController extends AbstractController
             'form' => $form->createView()
         ]);
     }
+
+    #[Route('/edit/{name}', name: 'app_author_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, AuthorRepository $authorRepository, EntityManagerInterface $em): Response
+    {
+        $author = new Author();
+        $authorSlug = $request->attributes->get('name');
+        $author = $authorRepository->findOneBySomeField($authorSlug);
+
+        // $this->denyAccessUnlessGranted('TRICK_EDIT', $author);
+        //I create my form for edit trick
+        $form = $this->createForm(AuthorType::class, $author);
+        // $user = $this->getUser();
+        //the form request is processed
+        $form->handleRequest($request);
+
+        // if ($user === null) {
+            
+        //     $this->addFlash('danger', 'Veuillez vous connecter pour modifier un trick');
+        //     return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
+        // }
+        //I check if I have a form and that it is valid
+        if ($form->isSubmitted() && $form->isValid()) {
+
+
+            $author->setName(strtoupper($author->getName()));
+
+
+            // $em->persist($author);
+            // $em->flush();
+
+            $authorRepository->save($author, true);
+            $this->addFlash(
+                'success',
+                'Le trick a bien été enregistré'
+            );
+
+            // return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('author/edit.html.twig', [
+            'author' => $author,
+            'form' => $form->createView()
+        ]);
+    }
+
 }
